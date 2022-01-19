@@ -16,7 +16,7 @@ class RepoBloc extends Bloc<RepoEvent, RepoState> {
     if (event is RepoLoadEvent) {
       yield RepoLoadingState();
       try {
-        final List<Repo> _loadedReposList = await repo.getAllRepos(event.id);
+        final List<Repo> _loadedReposList = await repo.getAllRepos(event.id, event.pageNum);
 
         yield RepoLoadedState(loadedRepos: _loadedReposList);
       } catch (_) {

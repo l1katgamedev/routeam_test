@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:routeam_test/bloc/repos.dart';
-import 'package:routeam_test/models/repo.dart';
 import 'package:routeam_test/ui/screens/webview.dart';
+import 'package:routeam_test/ui/widgets/card_widget.dart';
 
 class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  Widget searchTitle = Text('Github');
+  Widget searchTitle = const Text('Github');
   final TextEditingController _filter = TextEditingController(text: '');
   bool _validate = false;
-  List<dynamic> dropdownValue = [10, 20, 30, 50];
+  int? dropdownValue;
+  List<int> dropdownValues = [10, 25, 50];
 
   @override
   void initState() {
@@ -43,7 +46,7 @@ class _MainPageState extends State<MainPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Center(
                   child: Container(
@@ -57,9 +60,10 @@ class _MainPageState extends State<MainPage> {
                       ),
                       onSubmitted: (String value) {
                         setState(() {
-                          if (_filter.text.length > 3) {
+                          if (_filter.text.length >= 3) {
                             RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
-                            bloc.add(RepoLoadEvent(_filter.text));
+                            bloc.add(
+                                RepoLoadEvent(_filter.text, dropdownValue));
                           }
                         });
                         setState(() {
@@ -70,14 +74,14 @@ class _MainPageState extends State<MainPage> {
                       },
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        fillColor: Color(0xFF1C2128),
-                        enabledBorder: OutlineInputBorder(
+                        fillColor: const Color(0xFF1C2128),
+                        enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xFF444C56),
                             width: 2,
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderSide:
                               BorderSide(color: Color(0xFF539BD5), width: 2.0),
                         ),
@@ -86,17 +90,60 @@ class _MainPageState extends State<MainPage> {
                         errorText:
                             _validate ? 'Write more than 3 letters' : null,
                         hintText: 'Find a repository...',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Color(0xFF545D68),
                         ),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 0),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
+                ),
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xFF545D68), width: 2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: DropdownButton<dynamic>(
+                        dropdownColor: const Color(0xFF545D68),
+                        underline: Container(),
+                        elevation: 20,
+                        iconSize: 36.0,
+                        hint: const Text(
+                          'Choose',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        value: dropdownValue,
+                        items: dropdownValues.map((int value) {
+                          return DropdownMenuItem<int>(
+                            value: value,
+                            child: Text(
+                              value.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            dropdownValue = newValue!;
+                            if (_filter.text.length >= 3) {
+                              RepoBloc bloc =
+                                  BlocProvider.of<RepoBloc>(context);
+                              bloc.add(RepoLoadEvent(_filter.text, newValue));
+                            }
+                          });
+                        }),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 BlocBuilder<RepoBloc, RepoState>(
                   builder: (context, state) {
@@ -125,90 +172,7 @@ class _MainPageState extends State<MainPage> {
                                     );
                                   }));
                                 },
-                                child: Card(
-                                  color: const Color(0xFF2D333B),
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    side: const BorderSide(
-                                        color: Color(0xFF444C56), width: 1),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 5),
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                          title: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 4),
-                                              child: Text(
-                                                item.name ?? 'Ther is no name',
-                                                style: const TextStyle(
-                                                    fontSize: 20,
-                                                    color: Color(0xFF539BD5)),
-                                              )),
-                                          subtitle: Text(
-                                            item.description ??
-                                                "There is no description",
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 8,
-                                              left: 10,
-                                              right: 10,
-                                              bottom: 10),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star_border_outlined,
-                                                color: Color(0xFFFFFAA0),
-                                              ),
-                                              SizedBox(
-                                                width: 0,
-                                              ),
-                                              Text(
-                                                item.stargazers.toString() ??
-                                                    '0',
-                                                style: TextStyle(
-                                                  color: Color(0xFFFFFAA0),
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Icon(
-                                                Icons.person_outline_outlined,
-                                                color: Colors.white,
-                                              ),
-                                              Text(
-                                                  item.watchers.toString() ??
-                                                      '0',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15,
-                                                  )),
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Text(
-                                                  item.language ??
-                                                      'No language',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF539BD5),
-                                                    fontSize: 16,
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                child: CardWidget(item: item),
                               ),
                             );
                           },
@@ -234,7 +198,7 @@ class _MainPageState extends State<MainPage> {
                       );
                     }
 
-                    return Text('');
+                    return const Text('');
                   },
                 ),
               ],
