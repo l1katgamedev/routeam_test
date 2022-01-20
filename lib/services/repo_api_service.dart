@@ -6,15 +6,17 @@ import 'package:routeam_test/util/env.dart';
 List<dynamic> filteredNames = [];
 
 class RepoProvider {
-  Future<List<Repo>> getRepo(id, pageNum) async {
+  Future<List<Repo>> getRepo(id, repoCount, pageNum) async {
     var urlString;
 
     Map<String, dynamic> queryParameters = {
       'q': id,
-      'per_page': pageNum,
+      'per_page': repoCount,
+      'page': pageNum,
     };
 
-    urlString = Uri.http(url, '/search/repositories', queryParameters.map((key, value) => MapEntry(key, value.toString())));
+    urlString = Uri.http(url, '/search/repositories',
+        queryParameters.map((key, value) => MapEntry(key, value.toString())));
 
     final response = await http.get(urlString);
 

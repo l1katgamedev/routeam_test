@@ -17,6 +17,7 @@ class _MainPageState extends State<MainPage> {
   bool _validate = false;
   int? dropdownValue;
   List<int> dropdownValues = [10, 25, 50];
+  int? pageNum = 1;
 
   @override
   void initState() {
@@ -62,8 +63,8 @@ class _MainPageState extends State<MainPage> {
                         setState(() {
                           if (_filter.text.length >= 3) {
                             RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
-                            bloc.add(
-                                RepoLoadEvent(_filter.text, dropdownValue));
+                            bloc.add(RepoLoadEvent(
+                                _filter.text, pageNum, dropdownValue));
                           }
                         });
                         setState(() {
@@ -136,7 +137,8 @@ class _MainPageState extends State<MainPage> {
                             if (_filter.text.length >= 3) {
                               RepoBloc bloc =
                                   BlocProvider.of<RepoBloc>(context);
-                              bloc.add(RepoLoadEvent(_filter.text, newValue));
+                              bloc.add(RepoLoadEvent(
+                                  _filter.text, pageNum, newValue));
                             }
                           });
                         }),
@@ -200,6 +202,43 @@ class _MainPageState extends State<MainPage> {
 
                     return const Text('');
                   },
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            pageNum = pageNum! - 1;
+
+                            RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
+                            bloc.add(RepoLoadEvent(
+                                _filter.text, pageNum, dropdownValue));
+                          });
+                        },
+                        child: Text('nazad'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            pageNum = pageNum! + 1;
+
+                            RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
+                            bloc.add(RepoLoadEvent(
+                                _filter.text, pageNum, dropdownValue));
+                          });
+                        },
+                        child: Text('vpered'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
