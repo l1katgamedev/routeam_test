@@ -64,7 +64,7 @@ class _MainPageState extends State<MainPage> {
                           if (_filter.text.length >= 3) {
                             RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
                             bloc.add(RepoLoadEvent(
-                                _filter.text, pageNum, dropdownValue));
+                                _filter.text, dropdownValue, pageNum));
                           }
                         });
                         setState(() {
@@ -104,44 +104,83 @@ class _MainPageState extends State<MainPage> {
                   height: 10,
                 ),
                 Center(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFF545D68), width: 2),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: DropdownButton<dynamic>(
-                        dropdownColor: const Color(0xFF545D68),
-                        underline: Container(),
-                        elevation: 20,
-                        iconSize: 36.0,
-                        hint: const Text(
-                          'Choose',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        value: dropdownValue,
-                        items: dropdownValues.map((int value) {
-                          return DropdownMenuItem<int>(
-                            value: value,
-                            child: Text(
-                              value.toString(),
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFF545D68), width: 2),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF545D68)
                             ),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            dropdownValue = newValue!;
-                            if (_filter.text.length >= 3) {
-                              RepoBloc bloc =
-                                  BlocProvider.of<RepoBloc>(context);
-                              bloc.add(RepoLoadEvent(
-                                  _filter.text, pageNum, newValue));
-                            }
-                          });
-                        }),
+                            onPressed: () {
+                              setState(() {
+                                pageNum = pageNum! - 1;
+
+                                RepoBloc bloc =
+                                BlocProvider.of<RepoBloc>(context);
+                                bloc.add(RepoLoadEvent(
+                                    _filter.text, dropdownValue, pageNum));
+                              });
+                            },
+                            child: Icon(Icons.arrow_back),
+                          ),
+                          DropdownButton<dynamic>(
+                            dropdownColor: const Color(0xFF545D68),
+                            underline: Container(),
+                            elevation: 20,
+                            iconSize: 36.0,
+                            hint: const Text(
+                              'Choose',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            value: dropdownValue,
+                            items: dropdownValues.map((int value) {
+                              return DropdownMenuItem<int>(
+                                value: value,
+                                child: Text(
+                                  value.toString(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                dropdownValue = newValue!;
+                                if (_filter.text.length >= 3) {
+                                  RepoBloc bloc =
+                                      BlocProvider.of<RepoBloc>(context);
+                                  bloc.add(RepoLoadEvent(
+                                      _filter.text, newValue, pageNum));
+                                }
+                              });
+                            }),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF545D68)
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                pageNum = pageNum! + 1;
+
+                                RepoBloc bloc =
+                                BlocProvider.of<RepoBloc>(context);
+                                bloc.add(RepoLoadEvent(
+                                    _filter.text, dropdownValue, pageNum));
+                              });
+                            },
+                            child: Icon(Icons.arrow_forward),
+                          ),
+                      ]),
+                    ),
                   ),
                 ),
                 const SizedBox(
@@ -202,43 +241,6 @@ class _MainPageState extends State<MainPage> {
 
                     return const Text('');
                   },
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            pageNum = pageNum! - 1;
-
-                            RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
-                            bloc.add(RepoLoadEvent(
-                                _filter.text, pageNum, dropdownValue));
-                          });
-                        },
-                        child: Text('nazad'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            pageNum = pageNum! + 1;
-
-                            RepoBloc bloc = BlocProvider.of<RepoBloc>(context);
-                            bloc.add(RepoLoadEvent(
-                                _filter.text, pageNum, dropdownValue));
-                          });
-                        },
-                        child: Text('vpered'),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
